@@ -260,3 +260,47 @@ graficos_combinados <- p/ p +
 # defino el tamaño de las etiquetas
 graficos_combinados
 
+# gráficos animados con plotly
+library(plotly)
+
+#no anda por algún motivo
+text_size <-14   # tamaño base del texto
+margin_size <- text_size/2  #de los margenes
+p_capa_smooth <- ggplot(data=gapminder, mapping=aes(x= gdpPercap, y= lifeExp)) +
+  geom_point(aes(color=continent),size=3,alpha=0.6) +
+  geom_smooth(method = 'gam', col = "#2c204d", size = 0.7,
+              fill = "gray60", alpha = 0.2) +
+  scale_x_log10(labels= scales::dollar) +
+  scale_color_manual(values= c("#41b6a6", "#f6e37c","#f5a26b","#51b8df","#713580"), labels= c("Africa", "America", "Asia","Europa", "Oceanía"))+
+  labs(x="Ingreso (PBI) Per Capita", y="Esperanza de vida en años",
+       title ="Crecimiento económico y esperanza de vida", subtitle ="Los puntos se representan por año-país" , caption = "DataSource: Gapminder- Link: https://www.gapminder.org.", color= '')+
+  guides(color = guide_legend(override.aes = list(size = 5)))+
+  theme_light()+
+  theme(legend.position="bottom", legend.key= element_rect(fill='NA'),
+        legend.text= element_text(color="#2c204d", 
+                                  size= text_size), 
+        legend.justification = "center",
+        
+        plot.title = element_text(size=(text_size * 1.8),family ="Garamond",    
+                                  hjust = 0.5,vjust = 1,
+                                  colour = "#2c204d", #
+                                  face = 'bold', 
+                                  margin = margin(b = margin_size * 1.2)),
+        plot.subtitle = element_text(size = text_size * 1.3,
+                                     family ="Garamond", hjust = 0.5, vjust = 1, 
+                                     colour = "#2c204d",
+                                     margin = margin(b = margin_size * 0.9)),
+        plot.caption = element_text(size = 11,family ="Garamond",
+                                    hjust = 1, vjust = 1,
+                                    colour = "#2c204d", 
+                                    face='bold',
+                                    margin = margin(t = margin_size * 0.9)),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(color = "gray90", size = 0.5),
+        panel.grid.minor = element_line(color = "gray90", size = 0.25))
+p_capa_smooth
+
+ggplotly(p_capa_smooth, hoverinfo = "all") 
+
+
+ggplotly(p_facet)
