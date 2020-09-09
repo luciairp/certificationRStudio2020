@@ -1,0 +1,89 @@
+---
+title: "práctica examen"
+author: "LRP"
+date: "9 September 2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+```
+
+
+
+```{r basic operations}
+#1
+person <- read_csv("person.csv")
+
+#2
+person_names <- person %>% 
+  select(family_name,personal_name)
+
+#3
+person_befM <- person %>%
+  #mutate(inicial = )
+  filter(family_name < "M")
+  
+#4
+person_ord <- person %>% 
+  arrange(desc(str_length(family_name)))
+  
+```
+
+```{r cleaning and counting}
+#1
+measurements <- read_csv("measurements.csv")
+
+#2
+clean <- measurements %>% 
+  drop_na()
+#complete.cases no es tidyverse
+
+#3
+por_vble <- clean %>% 
+  group_by(quantity) %>%
+  count() %>%
+  ungroup()
+
+#4
+resumen <- clean %>%
+  group_by(quantity) %>% 
+    summarise(min_reading = min(reading),max_reading = max(reading))
+#5
+sal_dec <- clean %>% 
+  transmute_if(.predicate = quantity == "sal" & reading > 1, reading/100)
+
+sal_dec <- clean %>% 
+  pivot_wider(names_from = quantity, values_from = reading) %>% 
+  mutate(sal = case_when(
+    sal > 1 ~ sal/100,
+    TRUE ~ sal
+  )) %>%
+  pivot_longer(cols = c(sal,rad,temp),names_to = "quantity", values_to = "reading") %>% 
+  drop_na()
+  
+```
+
+
+```{r combining data}
+#1
+visited <- read_csv("visited.csv") %>% 
+  drop_na()
+
+#2
+visited <- inner_join(visited, clean, by = "visit_id")
+
+#3
+visited_maxrad <- visited %>%
+  pivot_wider(names_from = quantity, values_from = reading) %>% 
+  drop_na(rad) %>% 
+  group_by(site_id) %>% 
+  summarise(max_rad = max(rad))
+
+```
+
